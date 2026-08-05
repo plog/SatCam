@@ -34,11 +34,12 @@ final class ExtensionInstaller: NSObject, ObservableObject, OSSystemExtensionReq
     func request(_ request: OSSystemExtensionRequest, didFailWithError error: Error) {
         let ns = error as NSError
         logger.error("activation failed: \(ns, privacy: .public) userInfo=\(ns.userInfo, privacy: .public)")
-        var detail = "\(ns.domain) \(ns.code)"
-        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError {
-            logger.error("underlying: \(underlying, privacy: .public) userInfo=\(underlying.userInfo, privacy: .public)")
-            detail += " ← \(underlying.domain) \(underlying.code): \(underlying.localizedDescription)"
+        if ns.domain == OSSystemExtensionErrorDomain && ns.code == OSSystemExtensionError.unknown.rawValue {
+            // Free personal teams are denied the system-extension.install
+            // entitlement, which surfaces as this opaque error.
+            status = "Unavailable: activating the virtual camera requires a paid Apple Developer team. Use the preview meanwhile."
+        } else {
+            status = "Error: \(ns.localizedDescription) [\(ns.domain) \(ns.code)]"
         }
-        status = "Error: \(ns.localizedDescription) [\(detail)]"
     }
 }
