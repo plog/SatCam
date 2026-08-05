@@ -25,7 +25,7 @@ On Apple Silicon Macs the built-in camera is driven by Apple's ISP: it exposes *
 - macOS 13+ (Apple Silicon or Intel)
 - Xcode 15+
 - [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
-- An Apple ID added in Xcode → Settings → Accounts. The **free** Personal Team is enough — no paid developer program needed.
+- An Apple ID added in Xcode → Settings → Accounts, enrolled in the **paid Apple Developer Program**. ⚠️ Free Personal Teams cannot build this: activating a system extension requires the `com.apple.developer.system-extension.install` entitlement, which Apple does not grant to personal teams (activation fails with an opaque `OSSystemExtensionErrorDomain error 1`).
 
 ## Build & install
 

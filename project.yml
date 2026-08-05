@@ -17,8 +17,8 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleShortVersionString: "1.0.5"
-        CFBundleVersion: "6"
+        CFBundleShortVersionString: "1.0.6"
+        CFBundleVersion: "7"
         LSUIElement: true
         NSCameraUsageDescription: "SatCam captures the built-in camera to color-correct its feed."
     entitlements:
@@ -26,6 +26,7 @@ targets:
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.device.camera: true
+        com.apple.developer.system-extension.install: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: net.plog.SatCam
@@ -41,8 +42,8 @@ targets:
       path: Extension/Info.plist
       properties:
         CFBundlePackageType: SYSX
-        CFBundleShortVersionString: "1.0.5"
-        CFBundleVersion: "6"
+        CFBundleShortVersionString: "1.0.6"
+        CFBundleVersion: "7"
         CMIOExtension:
           CMIOExtensionMachServiceName: "$(TeamIdentifierPrefix)net.plog.SatCam"
     entitlements:
