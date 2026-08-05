@@ -1,9 +1,11 @@
 import Foundation
 import SystemExtensions
+import os.log
 
 final class ExtensionInstaller: NSObject, ObservableObject, OSSystemExtensionRequestDelegate {
 
     @Published var status = ""
+    private let logger = Logger(subsystem: "net.plog.SatCam", category: "installer")
 
     func install() {
         status = "Request submitted…"
@@ -30,6 +32,13 @@ final class ExtensionInstaller: NSObject, ObservableObject, OSSystemExtensionReq
     }
 
     func request(_ request: OSSystemExtensionRequest, didFailWithError error: Error) {
-        status = "Error: \(error.localizedDescription)"
+        let ns = error as NSError
+        logger.error("activation failed: \(ns, privacy: .public) userInfo=\(ns.userInfo, privacy: .public)")
+        var detail = "\(ns.domain) \(ns.code)"
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError {
+            logger.error("underlying: \(underlying, privacy: .public) userInfo=\(underlying.userInfo, privacy: .public)")
+            detail += " ← \(underlying.domain) \(underlying.code): \(underlying.localizedDescription)"
+        }
+        status = "Error: \(ns.localizedDescription) [\(detail)]"
     }
 }

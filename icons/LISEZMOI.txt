@@ -1,0 +1,19 @@
+Icônes — App caméra macOS
+==========================
+
+AppIcon.appiconset/
+  Glissez ce dossier tel quel dans Assets.xcassets de votre projet Xcode.
+  Contient toutes les tailles mac (16→512 pt, @1x et @2x, soit 16→1024 px)
+  en variantes standard et sombre (dark mode), avec Contents.json.
+  Note : "@2x" et "~dark" sont écrits "-2x" et "-dark" dans les noms de
+  fichiers ; le Contents.json y fait référence correctement, Xcode les lit tel quel.
+
+AppIcon-1024-light.png / AppIcon-1024-dark.png
+  Masters 1024×1024 (App Store).
+
+ui-icons/
+  svg/  icônes d'interface vectorielles (24 px, currentColor — se teintent
+        automatiquement, à utiliser comme images template)
+  png/  rendus 24 px (@1x) et 48 px (-2x), noir.
+
+Sources vectorielles modifiables : dossier icons/ du projet.
