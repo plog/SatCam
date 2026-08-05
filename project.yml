@@ -17,8 +17,8 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleShortVersionString: "1.0.6"
-        CFBundleVersion: "7"
+        CFBundleShortVersionString: "1.0.7"
+        CFBundleVersion: "8"
         LSUIElement: true
         NSCameraUsageDescription: "SatCam captures the built-in camera to color-correct its feed."
     entitlements:
@@ -26,7 +26,9 @@ targets:
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.device.camera: true
-        com.apple.developer.system-extension.install: true
+        # Required to activate the camera extension, but Apple only grants
+        # it to paid developer teams. Re-enable once enrollment is active.
+        # com.apple.developer.system-extension.install: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: net.plog.SatCam
@@ -42,8 +44,8 @@ targets:
       path: Extension/Info.plist
       properties:
         CFBundlePackageType: SYSX
-        CFBundleShortVersionString: "1.0.6"
-        CFBundleVersion: "7"
+        CFBundleShortVersionString: "1.0.7"
+        CFBundleVersion: "8"
         CMIOExtension:
           CMIOExtensionMachServiceName: "$(TeamIdentifierPrefix)net.plog.SatCam"
     entitlements:

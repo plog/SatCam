@@ -44,6 +44,26 @@ struct ContentView: View {
             .padding(.top, 12)
             .padding(.bottom, 10)
 
+            // Live preview
+            if pipeline.running {
+                Group {
+                    if let cg = pipeline.preview {
+                        Image(decorative: cg, scale: 1.0)
+                            .resizable()
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                    } else {
+                        ZStack {
+                            Rectangle().fill(.black)
+                            ProgressView().controlSize(.small)
+                        }
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .padding(.horizontal, 14)
+                .padding(.bottom, 10)
+            }
+
             // Status
             HStack(spacing: 6) {
                 Circle()
@@ -111,6 +131,11 @@ struct ContentView: View {
             .padding(.vertical, 10)
         }
         .frame(width: 300)
+        .onAppear { pipeline.previewEnabled = true }
+        .onDisappear {
+            pipeline.previewEnabled = false
+            pipeline.preview = nil
+        }
     }
 }
 

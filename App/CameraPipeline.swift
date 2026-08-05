@@ -17,6 +17,10 @@ final class CameraPipeline: NSObject, ObservableObject, AVCaptureVideoDataOutput
     }
     @Published var running = false
     @Published var status = "Stopped"
+    @Published var preview: CGImage?
+    /// Only render preview frames while the popover is visible.
+    var previewEnabled = false
+    private var previewFrameCounter = 0
 
     private let session = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
@@ -48,14 +52,11 @@ final class CameraPipeline: NSObject, ObservableObject, AVCaptureVideoDataOutput
     }
 
     private func startPipeline() {
-        guard connectToExtension() else {
-            status = "SatCam camera not found — is the extension installed?"
-            return
-        }
+        let extensionConnected = connectToExtension()
         guard setUpCapture() else { return }
         captureQueue.async { self.session.startRunning() }
         running = true
-        status = "Running"
+        status = extensionConnected ? "Running" : "Preview only — extension not installed"
     }
 
     func stop() {
@@ -109,9 +110,23 @@ final class CameraPipeline: NSObject, ObservableObject, AVCaptureVideoDataOutput
     func captureOutput(_ output: AVCaptureOutput,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
+        guard let inputBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+
+        let filter = CIFilter.colorControls()
+        filter.inputImage = CIImage(cvPixelBuffer: inputBuffer)
+        filter.saturation = Float(saturation)
+        filter.contrast = Float(contrast)
+        guard let result = filter.outputImage else { return }
+
+        if previewEnabled {
+            previewFrameCounter += 1
+            if previewFrameCounter % 2 == 0, let cg = ciContext.createCGImage(result, from: result.extent) {
+                DispatchQueue.main.async { self.preview = cg }
+            }
+        }
+
         guard let queue = sinkQueue,
-              CMSimpleQueueGetCount(queue) < CMSimpleQueueGetCapacity(queue),
-              let inputBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+              CMSimpleQueueGetCount(queue) < CMSimpleQueueGetCapacity(queue) else { return }
 
         let width = CVPixelBufferGetWidth(inputBuffer)
         let height = CVPixelBufferGetHeight(inputBuffer)
@@ -128,12 +143,6 @@ final class CameraPipeline: NSObject, ObservableObject, AVCaptureVideoDataOutput
         var outBuffer: CVPixelBuffer?
         CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool, &outBuffer)
         guard let outBuffer else { return }
-
-        let filter = CIFilter.colorControls()
-        filter.inputImage = CIImage(cvPixelBuffer: inputBuffer)
-        filter.saturation = Float(saturation)
-        filter.contrast = Float(contrast)
-        guard let result = filter.outputImage else { return }
         ciContext.render(result, to: outBuffer)
 
         var formatDesc: CMFormatDescription?
