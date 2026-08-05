@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# Private Claude instructions
+CLAUDE.md
+
 # Xcode project is generated — run `xcodegen generate`
 SatCam.xcodeproj/
 
